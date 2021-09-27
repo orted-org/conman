@@ -51,13 +51,13 @@ func (c *Config) Set(data []byte) error {
 	defer c.mu.Unlock()
 	return json.Unmarshal(data, &c.config)
 }
-func (c *Config) Get(key string) (interface{}, error) {
+func (c *Config) Get(key string) interface{} {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
 	if config, ok := c.config[key]; ok {
-		return config, nil
+		return config
 	}
-	return nil, nil
+	return nil
 }
 func (c *Config) GetAll() map[string]interface{} {
 	c.mu.RLock()
