@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"os"
 	"strconv"
 	"time"
@@ -10,13 +11,30 @@ import (
 )
 
 func main() {
+	logger := log.Default()
 	config := conman.NewConfig()
 
 	// setting file name
 	fileName := os.Getenv("CONMAN_FILENAME")
 	if len(fileName) != 0 {
-		// no file name passed
+		// file name is specified
 		config.SetFilename(fileName)
+	} else {
+		logger.Println("File not specified")
+		// no file name is specified
+		_, err := os.Stat("./temp.json")
+		if err != nil {
+			// temp.json not present
+			logger.Println("Creating temp.json in current directory to store configurations")
+			_, err := os.Create("./temp.json")
+			if err != nil {
+				panic("no file specified and could not create a temp file to store configurations")
+			}
+		} else {
+			// temp.json present
+			logger.Println("Using temp.json of the current directory for storing configurations")
+		}
+		config.SetFilename("./temp.json")
 	}
 
 	// check if watch file

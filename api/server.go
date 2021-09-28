@@ -22,21 +22,12 @@ func ServerInit(incomingConfig *conman.Config, addr string) {
 	}
 
 	logger.Println("Server running on address", addr)
-	PrintInitialLogs()
-	log.Fatal(srv.ListenAndServe())
-}
-func PrintInitialLogs() {
-
-	if config.GetFileName() == "" {
-		logger.Println("Running in", "Memory", "mode")
-	} else {
-		logger.Println("Running in", "File", "mode")
-		logger.Println("Filename:", config.GetFileName())
-	}
+	logger.Println("Current filename:", config.GetFileName())
 
 	if config.GetCurrentWatchInterval() == -1 {
 		logger.Println("Not watching for file changes")
 	} else {
 		logger.Println("Watching file changes at interval of ", config.GetCurrentWatchInterval(), "seconds")
 	}
+	log.Fatal(srv.ListenAndServe())
 }
