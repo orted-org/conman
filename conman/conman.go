@@ -11,12 +11,14 @@ type Config struct {
 	config        map[string]interface{}
 	filename      string
 	mu            sync.RWMutex
+	duration      time.Duration
 	quitWatchChan chan struct{}
 }
 
 func NewConfig() *Config {
 	return &Config{
 		quitWatchChan: make(chan struct{}),
+		duration:      -1,
 	}
 }
 func (c *Config) SetFilename(fileName string) {
@@ -29,7 +31,14 @@ func (c *Config) SetFromFile() error {
 	}
 	return c.Set(data)
 }
+func (c *Config) GetFileName() string {
+	return c.filename
+}
+func (c *Config) GetCurrentWatchInterval() time.Duration {
+	return c.duration
+}
 func (c *Config) WatchFileChanges(duration time.Duration) {
+	c.duration = duration
 	ticker := time.NewTicker(duration)
 
 	go func() {
@@ -44,6 +53,7 @@ func (c *Config) WatchFileChanges(duration time.Duration) {
 	}()
 }
 func (c *Config) UnWatchFileChanges() {
+	c.duration = -1
 	c.quitWatchChan <- struct{}{}
 }
 func (c *Config) Set(data []byte) error {

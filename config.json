@@ -1,6 +1,6 @@
 {
     "foo": {
         "addr": "localhost",
-        "port": 9092
+        "port": 6663
     }
 }

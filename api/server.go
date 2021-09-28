@@ -9,30 +9,34 @@ import (
 )
 
 var config *conman.Config
+var logger = log.Default()
 
-func configInit() {
-	config = conman.NewConfig()
-	config.SetFilename("./config.json")
-	config.SetFromFile()
-}
-func ServerInit(addr string) {
-	configInit()
+func ServerInit(incomingConfig *conman.Config, addr string) {
+	config = incomingConfig
 	r := chi.NewRouter()
 	r.Get("/{key}", getConfig)
-
+	r.Put("/watch", setWatchFileDuration)
 	srv := http.Server{
 		Addr:    addr,
 		Handler: r,
 	}
+
+	logger.Println("Server running on address", addr)
+	PrintInitialLogs()
 	log.Fatal(srv.ListenAndServe())
 }
+func PrintInitialLogs() {
 
-func getConfig(rw http.ResponseWriter, r *http.Request) {
-	key := chi.URLParam(r, "key")
-	reqConfig := config.Get(key)
-	if reqConfig == nil {
-		jsonRes(rw, http.StatusNotFound, "key not found", nil)
-		return
+	if config.GetFileName() == "" {
+		logger.Println("Running in", "Memory", "mode")
+	} else {
+		logger.Println("Running in", "File", "mode")
+		logger.Println("Filename:", config.GetFileName())
 	}
-	jsonRes(rw, http.StatusOK, "", reqConfig)
+
+	if config.GetCurrentWatchInterval() == -1 {
+		logger.Println("Not watching for file changes")
+	} else {
+		logger.Println("Watching file changes at interval of ", config.GetCurrentWatchInterval(), "seconds")
+	}
 }
