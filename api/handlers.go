@@ -18,6 +18,10 @@ func getConfig(rw http.ResponseWriter, r *http.Request) {
 	}
 	jsonRes(rw, http.StatusOK, "", reqConfig)
 }
+func getAll(rw http.ResponseWriter, r *http.Request) {
+	jsonRes(rw, http.StatusOK, "", config.GetAll())
+}
+
 func setWatchFileDuration(rw http.ResponseWriter, r *http.Request) {
 	rawDuration := r.URL.Query().Get("duration")
 	if len(rawDuration) == 0 {
