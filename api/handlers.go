@@ -10,10 +10,13 @@ import (
 )
 
 // handler for getting the current filename and watch duration
-func getStats(rw http.ResponseWriter, r *http.Request){
-	
+func getStats(rw http.ResponseWriter, r *http.Request) {
+	stats := struct {
+		Filename      string        `json:"file_name"`
+		WatchDuration time.Duration `json:"watch_duration"`
+	}{Filename: config.GetFileName(), WatchDuration: time.Duration(config.GetCurrentWatchInterval().Seconds())}
+	jsonRes(rw, http.StatusOK, "", stats)
 }
-
 
 // handler for getting specified config
 func getConfig(rw http.ResponseWriter, r *http.Request) {
