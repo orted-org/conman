@@ -9,6 +9,13 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
+// handler for getting the current filename and watch duration
+func getStats(rw http.ResponseWriter, r *http.Request){
+	
+}
+
+
+// handler for getting specified config
 func getConfig(rw http.ResponseWriter, r *http.Request) {
 	key := chi.URLParam(r, "key")
 	reqConfig := config.Get(key)
@@ -18,10 +25,13 @@ func getConfig(rw http.ResponseWriter, r *http.Request) {
 	}
 	jsonRes(rw, http.StatusOK, "", reqConfig)
 }
+
+// handler for getting all the configs
 func getAll(rw http.ResponseWriter, r *http.Request) {
 	jsonRes(rw, http.StatusOK, "", config.GetAll())
 }
 
+// handler for setting duration for file watch
 func setWatchFileDuration(rw http.ResponseWriter, r *http.Request) {
 	rawDuration := r.URL.Query().Get("duration")
 	if len(rawDuration) == 0 {
