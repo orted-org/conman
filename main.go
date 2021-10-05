@@ -56,5 +56,4 @@ func main() {
 	}
 
 	api.ServerInit(config, "localhost:4000")
-
 }

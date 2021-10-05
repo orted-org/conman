@@ -15,15 +15,20 @@ type Config struct {
 	quitWatchChan chan struct{}
 }
 
+// returns new config
 func NewConfig() *Config {
 	return &Config{
 		quitWatchChan: make(chan struct{}),
 		duration:      -1,
 	}
 }
+
+// sets filename
 func (c *Config) SetFilename(fileName string) {
 	c.filename = fileName
 }
+
+// sets config from file
 func (c *Config) SetFromFile() error {
 	data, err := ioutil.ReadFile(c.filename)
 	if err != nil {
@@ -31,12 +36,18 @@ func (c *Config) SetFromFile() error {
 	}
 	return c.Set(data)
 }
+
+// returns current file name
 func (c *Config) GetFileName() string {
 	return c.filename
 }
+
+// returns current watch interval
 func (c *Config) GetCurrentWatchInterval() time.Duration {
 	return c.duration
 }
+
+// enable watching file changes in regular intervals using go routine
 func (c *Config) WatchFileChanges(duration time.Duration) {
 	c.duration = duration
 	ticker := time.NewTicker(duration)
@@ -52,15 +63,21 @@ func (c *Config) WatchFileChanges(duration time.Duration) {
 		}
 	}()
 }
+
+// disable watching to file changes
 func (c *Config) UnWatchFileChanges() {
 	c.duration = -1
 	c.quitWatchChan <- struct{}{}
 }
+
+// sets config according to the byte array data provided
 func (c *Config) Set(data []byte) error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	return json.Unmarshal(data, &c.config)
 }
+
+// returns the interface of the requested config
 func (c *Config) Get(key string) interface{} {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
@@ -69,6 +86,8 @@ func (c *Config) Get(key string) interface{} {
 	}
 	return nil
 }
+
+// returns all the config
 func (c *Config) GetAll() map[string]interface{} {
 	c.mu.RLock()
 	defer c.mu.RUnlock()

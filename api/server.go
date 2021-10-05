@@ -19,6 +19,7 @@ func ServerInit(incomingConfig *conman.Config, addr string) {
 	r.Get("/", getAll)
 	r.Get("/{key}", getConfig)
 	r.Put("/watch", setWatchFileDuration)
+	r.Get("/stats", getStats)
 
 	// server config
 	srv := http.Server{
