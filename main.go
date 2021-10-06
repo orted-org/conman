@@ -55,10 +55,15 @@ func main() {
 			}
 		}
 	}
-	secret := os.Getenv("api_secret")
+	secret := os.Getenv("CONMAN_API_SECRET")
 	if secret == "" {
 		// using a default api secret
 		secret = "secret@api"
 	}
-	api.ServerInit(config, secret, "localhost:4000")
+	port := os.Getenv("CONMAN_PORT")
+	if port == "" {
+		// using the default port as 4000
+		port = "4000"
+	}
+	api.ServerInit(config, secret, "0.0.0.0:"+port)
 }
