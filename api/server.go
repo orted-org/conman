@@ -11,16 +11,16 @@ import (
 var config *conman.Config
 var logger = log.Default()
 
-func ServerInit(incomingConfig *conman.Config, addr string) {
+func ServerInit(incomingConfig *conman.Config, secret, addr string) {
 	config = incomingConfig
 	r := chi.NewRouter()
 
 	// routes
-	r.Get("/", getAll)
-	r.Post("/", setConfig)
-	r.Get("/{key}", getConfig)
-	r.Put("/watch", setWatchFileDuration)
-	r.Get("/stats", getStats)
+	r.Get("/", auth(secret, getAll))
+	r.Post("/", auth(secret, setConfig))
+	r.Get("/{key}", auth(secret, getConfig))
+	r.Put("/watch", auth(secret, setWatchFileDuration))
+	r.Get("/stats", auth(secret, getStats))
 
 	// server config
 	srv := http.Server{
