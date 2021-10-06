@@ -1,11 +1,13 @@
 package api
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -98,4 +100,37 @@ func setConfig(rw http.ResponseWriter, r *http.Request) {
 
 	jsonRes(rw, http.StatusOK, "in memory configuration changed", nil)
 
+}
+
+// basic authentication middleware
+func auth(secret string, next http.HandlerFunc) http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		const authBasic = "Basic"
+		var h = r.Header.Get("Authorization")
+		var key string = ""
+
+		// Basic auth scheme.
+		if strings.HasPrefix(h, authBasic) {
+			payload, err := base64.StdEncoding.DecodeString(string(strings.Trim(h[len(authBasic):], " ")))
+			if err != nil {
+				jsonRes(w, http.StatusUnauthorized, "invalid Base64 value in Basic Authorization header",
+					nil)
+				return
+			}
+
+			key = string(payload)
+		} else {
+			jsonRes(w, http.StatusUnauthorized, "missing Basic Authorization header",
+				nil)
+			return
+
+		}
+
+		if key != secret {
+			jsonRes(w, http.StatusUnauthorized, "invalid API credentials",
+				nil)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
 }

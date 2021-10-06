@@ -55,6 +55,10 @@ func main() {
 			}
 		}
 	}
-
-	api.ServerInit(config, "localhost:4000")
+	secret := os.Getenv("api_secret")
+	if secret == "" {
+		// using a default api secret
+		secret = "secret@api"
+	}
+	api.ServerInit(config, secret, "localhost:4000")
 }
