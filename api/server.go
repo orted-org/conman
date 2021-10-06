@@ -38,5 +38,6 @@ func ServerInit(incomingConfig *conman.Config, secret, addr string) {
 	}
 
 	// listen and serve
+	logger.Println("Server running and listening at", srv.Addr)
 	log.Fatal(srv.ListenAndServe())
 }
