@@ -3,7 +3,10 @@ services:
   conman:
     container_name: conman_app
     build: .
+    volumes:
+      - ./config.json:/app/config.json:rw
     environment:
+      CONMAN_FILENAME: ./config.json
       CONMAN_WATCH_DURATION: 3
       CONMAN_API_SECRET: myapikey
       CONMAN_PORT: 4000
