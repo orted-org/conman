@@ -65,5 +65,5 @@ func main() {
 		// using the default port as 4000
 		port = "4000"
 	}
-	api.ServerInit(config, secret, "localhost:"+port)
+	api.ServerInit(config, secret, "0.0.0.0:"+port)
 }

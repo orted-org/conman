@@ -1,0 +1,11 @@
+version: "3"
+services:
+  conman:
+    container_name: conman_app
+    build: .
+    environment:
+      CONMAN_WATCH_DURATION: 3
+      CONMAN_API_SECRET: myapikey
+      CONMAN_PORT: 4000
+    ports:
+      - "4000:4000"

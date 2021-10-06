@@ -29,7 +29,6 @@ func ServerInit(incomingConfig *conman.Config, secret, addr string) {
 	}
 
 	// initial logs
-	logger.Println("Server running on address", addr)
 	logger.Println("Current filename:", config.GetFileName())
 	if config.GetCurrentWatchInterval() == -1 {
 		logger.Println("Not watching for file changes")
