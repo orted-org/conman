@@ -36,6 +36,7 @@ func main() {
 		}
 		config.SetFilename("./temp.json")
 	}
+	config.SetFromFile()
 
 	// check if watch file
 	watchDuration := os.Getenv("CONMAN_WATCH_DURATION")

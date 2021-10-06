@@ -17,6 +17,7 @@ func ServerInit(incomingConfig *conman.Config, addr string) {
 
 	// routes
 	r.Get("/", getAll)
+	r.Post("/", setConfig)
 	r.Get("/{key}", getConfig)
 	r.Put("/watch", setWatchFileDuration)
 	r.Get("/stats", getStats)

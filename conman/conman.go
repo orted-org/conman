@@ -2,7 +2,9 @@ package conman
 
 import (
 	"encoding/json"
+	"io/fs"
 	"io/ioutil"
+	"os"
 	"sync"
 	"time"
 )
@@ -28,6 +30,13 @@ func (c *Config) SetFilename(fileName string) {
 	c.filename = fileName
 }
 
+// sets config according to the byte array data provided
+func (c *Config) Set(data []byte) error {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	return json.Unmarshal(data, &c.config)
+}
+
 // sets config from file
 func (c *Config) SetFromFile() error {
 	data, err := ioutil.ReadFile(c.filename)
@@ -40,6 +49,11 @@ func (c *Config) SetFromFile() error {
 // returns current file name
 func (c *Config) GetFileName() string {
 	return c.filename
+}
+
+// write configuration to file
+func (c *Config) WriteConfigToFile(data []byte) error {
+	return ioutil.WriteFile(c.filename, data, fs.FileMode(os.O_RDWR))
 }
 
 // returns current watch interval
@@ -68,13 +82,6 @@ func (c *Config) WatchFileChanges(duration time.Duration) {
 func (c *Config) UnWatchFileChanges() {
 	c.duration = -1
 	c.quitWatchChan <- struct{}{}
-}
-
-// sets config according to the byte array data provided
-func (c *Config) Set(data []byte) error {
-	c.mu.Lock()
-	defer c.mu.Unlock()
-	return json.Unmarshal(data, &c.config)
 }
 
 // returns the interface of the requested config
