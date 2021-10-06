@@ -1,7 +1,9 @@
 package api
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"strconv"
 	"time"
@@ -59,4 +61,41 @@ func setWatchFileDuration(rw http.ResponseWriter, r *http.Request) {
 	}
 	config.WatchFileChanges(time.Second * time.Duration(duration))
 	jsonRes(rw, http.StatusOK, fmt.Sprintf("watching file changes at interval of %d seconds", duration), nil)
+}
+
+// handler for setting the config
+func setConfig(rw http.ResponseWriter, r *http.Request) {
+	b, err := ioutil.ReadAll(r.Body)
+	defer r.Body.Close()
+	if err != nil {
+		jsonRes(rw, http.StatusBadRequest, "body could not be read", nil)
+		return
+	}
+
+	// validate if the json is valid
+	var temp interface{}
+	if err := json.Unmarshal(b, &temp); err != nil {
+		jsonRes(rw, http.StatusBadRequest, err.Error(), nil)
+		return
+	}
+
+	// setting the config to the config variable
+	if err := config.Set(b); err != nil {
+		jsonRes(rw, http.StatusInternalServerError, "could not set configuration", nil)
+		return
+	}
+
+	if hard := r.URL.Query().Get("hard"); hard == "true" {
+		// make changes to file also
+		if err := config.WriteConfigToFile(b); err != nil {
+			jsonRes(rw, http.StatusConflict, "in memory configuration changed but could not change configuration of file", nil)
+			return
+		} else {
+			jsonRes(rw, http.StatusConflict, "changed hard and soft configuration", nil)
+			return
+		}
+	}
+
+	jsonRes(rw, http.StatusOK, "in memory configuration changed", nil)
+
 }
